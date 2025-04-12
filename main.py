@@ -17,7 +17,7 @@ from src.utils import (
 )
 
 # Default constants
-DEFAULT_WHISPER_MODEL = "models/ggml-large-v3-turbo.bin"
+DEFAULT_WHISPER_MODEL = "models/ggml-large-v2.bin"  # Have best results for both English and Chinese
 DEFAULT_WHISPER_SH_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts", "whisper.sh")
 
 
