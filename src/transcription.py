@@ -215,14 +215,8 @@ class TranscriptionProcessor:
 
         # Language-specific prompts
         prompts = {
-            "en": (
-                "This is a song transcription."
-                "Label each section clearly with Intro, Verse, Chorus, Bridge, or Outro where appropriate."
-                "Lyrics should be poetic and structured."
-            ),
-            "zh": (
-                "這是歌曲轉錄。在適當的地方清楚地標記每個部分，如前奏、主歌、副歌、橋段或尾聲。歌詞應該具有詩意和結構性。"
-            ),
+            "en": "This is a song transcription. Lyrics should be poetic and structured.",
+            "zh": "這是歌曲轉錄，歌詞應該具有詩意和結構性。",
         }
 
         # Select prompt based on language
