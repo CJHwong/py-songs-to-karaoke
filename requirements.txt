@@ -1,0 +1,6 @@
+pygame>=2.5.0
+ffmpeg-python>=0.2.0
+typing_extensions>=4.0.0 # For Python < 3.11 for typing.Self
+# For whisper.cpp and vocal-remover, users need to install them separately.
+# These are not pip-installable Python packages in the traditional sense for this project's use.
+# Consult README.md for setup of whisper.cpp and vocal-remover.

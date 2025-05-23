@@ -5,7 +5,14 @@ import json
 import os
 import re
 import subprocess
-from typing import Any, Dict, List, Optional, Self
+import sys # For version check
+from typing import Any, Dict, List, Optional
+
+# Use typing_extensions for Self if Python < 3.11
+if sys.version_info < (3, 11):
+    from typing_extensions import Self
+else:
+    from typing import Self
 
 
 class Transcription:

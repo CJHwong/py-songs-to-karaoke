@@ -5,8 +5,12 @@ Test cases for utils.py module
 
 import os
 import unittest.mock as mock
+import sys
 
-from utils import cleanup_temp_dir, create_project_dir, create_temp_dir, get_env_path, load_env_file
+# Adjust path to import utils from src
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from src.utils import cleanup_temp_dir, create_project_dir, create_temp_dir, get_env_path, load_env_file # Changed to src.utils
 
 
 class TestUtils:

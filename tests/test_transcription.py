@@ -8,8 +8,13 @@ import unittest.mock as mock
 from io import StringIO
 
 import pytest
+import sys
+import os
 
-from transcription import Transcription, TranscriptionProcessor
+# Adjust path to import Transcription and TranscriptionProcessor from src
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+
+from src.transcription import Transcription, TranscriptionProcessor # Changed to src.transcription
 
 
 class TestTranscription:

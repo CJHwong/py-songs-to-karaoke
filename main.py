@@ -21,51 +21,35 @@ DEFAULT_WHISPER_MODEL = "models/ggml-large-v2.bin"  # Have best results for both
 DEFAULT_WHISPER_SH_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts", "whisper.sh")
 
 
-def main() -> int:
-    """Run the main application flow.
+def run_gui_application():
+    """Initializes and runs the GUI application."""
+    print("GUI mode activated. Launching Karaoke Master GUI...")
+    try:
+        from src.gui.main_window import MainApp
+        app = MainApp(library_path="karaoke_library.json") # Default library path for GUI
+        app.run()
+        return 0
+    except ImportError as e:
+        print(f"Error importing GUI components: {e}")
+        print("Please ensure that Pygame is installed and all GUI modules are correctly placed.")
+        return 1
+    except Exception as e:
+        print(f"An unexpected error occurred while running the GUI: {e}")
+        return 1
+
+
+def run_cli_processing(args) -> int:
+    """Runs the command-line interface processing for the application.
+
+    Args:
+        args: Parsed command-line arguments.
 
     Returns:
         int: Exit code (0 for success, 1 for failure)
     """
-    # Load environment variables
+    # Load environment variables (already loaded in main and passed via args where needed or accessed globally)
     whisper_cpp_path = get_env_path("WHISPER_CPP_PATH")
-    vocal_remover_path = get_env_path("VOCAL_REMOVER_PATH")
-
-    parser = argparse.ArgumentParser(description="Songs to Karaoke - Create karaoke versions with transcribed lyrics")
-    parser.add_argument("input_file", help="Input audio or video file")
-    parser.add_argument(
-        "--vocal-remover",
-        dest="vocal_remover_path",
-        default=vocal_remover_path,
-        help=f"Path to vocal-remover directory (default: {vocal_remover_path})",
-    )
-    parser.add_argument(
-        "--whisper-model",
-        dest="whisper_model",
-        default=DEFAULT_WHISPER_MODEL,
-        help=f"Whisper model name (default: {DEFAULT_WHISPER_MODEL})",
-    )
-    parser.add_argument(
-        "--language",
-        default="en",
-        choices=["en", "zh"],
-        help="Language code for transcription (en=English, zh=Chinese)",
-    )
-    parser.add_argument("--output", dest="output_dir", help="Output directory for generated files")
-    parser.add_argument(
-        "--skip-separation",
-        dest="skip_separation",
-        action="store_true",
-        help="Skip vocal separation step",
-    )
-    parser.add_argument(
-        "--skip-transcription",
-        dest="skip_transcription",
-        action="store_true",
-        help="Skip transcription step",
-    )
-
-    args = parser.parse_args()
+    # vocal_remover_path is already part of args
 
     # Check if input file exists
     if not os.path.exists(args.input_file):
@@ -171,6 +155,72 @@ def main() -> int:
     cleanup_temp_dir(temp_dir)
 
     return 0
+
+
+def main() -> int:
+    """Run the main application flow.
+
+    Returns:
+        int: Exit code (0 for success, 1 for failure)
+    """
+    # Load environment variables
+    # whisper_cpp_path = get_env_path("WHISPER_CPP_PATH") # Moved to CLI logic where it's used
+    vocal_remover_path = get_env_path("VOCAL_REMOVER_PATH")
+
+    parser = argparse.ArgumentParser(description="Songs to Karaoke - Create karaoke versions with transcribed lyrics")
+    # Changed "input_file" to have nargs='?' to make it optional
+    parser.add_argument("input_file", nargs='?', help="Input audio or video file (optional, for CLI mode)")
+    parser.add_argument("--gui", action="store_true", help="Force GUI mode")
+    parser.add_argument(
+        "--vocal-remover",
+        dest="vocal_remover_path",
+        default=vocal_remover_path,
+        help=f"Path to vocal-remover directory (default: {vocal_remover_path})",
+    )
+    parser.add_argument(
+        "--whisper-model",
+        dest="whisper_model",
+        default=DEFAULT_WHISPER_MODEL,
+        help=f"Whisper model name (default: {DEFAULT_WHISPER_MODEL})",
+    )
+    parser.add_argument(
+        "--language",
+        default="en",
+        choices=["en", "zh"],
+        help="Language code for transcription (en=English, zh=Chinese)",
+    )
+    parser.add_argument("--output", dest="output_dir", help="Output directory for generated files")
+    parser.add_argument(
+        "--skip-separation",
+        dest="skip_separation",
+        action="store_true",
+        help="Skip vocal separation step",
+    )
+    parser.add_argument(
+        "--skip-transcription",
+        dest="skip_transcription",
+        action="store_true",
+        help="Skip transcription step",
+    )
+
+    args = parser.parse_args()
+
+    # Determine mode: GUI or CLI
+    # If --gui is specified, or if no input_file is given, run GUI.
+    # Otherwise, run CLI.
+    if args.gui or not args.input_file:
+        if args.input_file:
+            print("Warning: input_file argument provided with --gui flag or without other CLI args. Prioritizing GUI mode.")
+            # Or, could choose to error out:
+            # parser.error("Cannot specify an input file when running in GUI mode unless other CLI processing args are present.")
+        return run_gui_application()
+    else:
+        # Ensure input_file is present for CLI mode (argparse with nargs='?' makes it optional)
+        if not args.input_file:
+            parser.print_help()
+            print("\nError: input_file is required for CLI mode.")
+            return 1
+        return run_cli_processing(args)
 
 
 if __name__ == "__main__":

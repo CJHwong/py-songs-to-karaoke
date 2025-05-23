@@ -4,10 +4,15 @@ Test cases for audio.py module
 """
 
 import unittest.mock as mock
+import sys
+import os
+
+# Adjust path to import AudioProcessor from src
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 import pytest
 
-from audio import AudioProcessor
+from src.audio import AudioProcessor # Changed to src.audio
 
 
 class TestAudioProcessor:
